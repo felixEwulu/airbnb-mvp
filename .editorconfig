@@ -1,0 +1,30 @@
+# top-most EditorConfig file
+root = true
+
+# All C# files
+[*.cs]
+
+# Indentation and spacing
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# C# specific rules
+dotnet_sort_system_directives_first = true
+csharp_new_line_before_open_brace = all
+csharp_preserve_single_line_statements = false
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# Naming conventions
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = suggestion
+dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_fields.required_modifiers = readonly
+
+dotnet_naming_style.camel_case.capitalization = camel_case
