@@ -11,33 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repo
+      # 1. Checkout the repository
       - uses: actions/checkout@v4
 
-      # Step 2: Setup .NET
+      # 2. Setup .NET 8
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
 
-      # Step 3: Find the solution file automatically
-      - name: Find solution file
-        id: find_sln
-        run: |
-          echo "##[group]Searching for .sln file"
-          SOLUTION=$(find . -name "*.sln" | head -n 1)
-          echo "Found solution: $SOLUTION"
-          echo "sln=$SOLUTION" >> $GITHUB_OUTPUT
-          echo "##[endgroup]"
-
-      # Step 4: Restore dependencies
+      # 3. Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore ${{ steps.find_sln.outputs.sln }}
+        run: dotnet restore ./airbnb-mvp.sln
 
-      # Step 5: Build the solution
+      # 4. Build solution
       - name: Build
-        run: dotnet build ${{ steps.find_sln.outputs.sln }} --no-restore --configuration Release
+        run: dotnet build ./airbnb-mvp.sln --no-restore --configuration Release
 
-      # Step 6: Run tests
+      # 5. Run tests
       - name: Run tests
-        run: dotnet test ${{ steps.find_sln.outputs.sln }} --no-build --verbosity normal
+        run: dotnet test ./backend/Airbnb.Tests/Airbnb.Tests.csproj --no-build --verbosity normal
