@@ -7,27 +7,27 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository
       - uses: actions/checkout@v4
 
-      # 2. Setup .NET 8
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
 
-      # 3. Restore dependencies
       - name: Restore dependencies
         run: dotnet restore ./airbnb-mvp.sln
 
-      # 4. Build solution
-      - name: Build
-        run: dotnet build ./airbnb-mvp.sln --no-restore --configuration Release
+      - name: Build solution
+        run: dotnet build ./airbnb-mvp.sln --configuration Release
 
-      # 5. Run tests
-      - name: Run tests
-        run: dotnet test ./backend/Airbnb.Tests/Airbnb.Tests.csproj --no-build --verbosity normal
+      - name: Run all tests
+        run: |
+          # Find all .csproj files that end with .Tests.csproj
+          for testproj in $(find ./backend -name "*.Tests.csproj"); do
+            echo "Running tests in $testproj"
+            dotnet test "$testproj" --configuration Release --verbosity normal
+          done
