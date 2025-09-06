@@ -1,24 +1,49 @@
+# ========================
+# .NET / C# / Visual Studio
+# ========================
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Entity Framework migrations
+Migrations/
+appsettings.*.json
+
 # Logs
-logs
+logs/
 *.log
+
+# ========================
+# Node.js / Frontend
+# ========================
+node_modules/
+dist/
+dist-ssr/
+*.local
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# ========================
+# OS / Editor files
+# ========================
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# Temporary / swap files
+*.tmp
+*.temp
+*.swp
+
+# ========================
+# Others
+# ========================
+.env

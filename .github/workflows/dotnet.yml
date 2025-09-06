@@ -1,0 +1,33 @@
+name: .NET CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ./airbnb-mvp.sln
+
+      - name: Build solution
+        run: dotnet build ./airbnb-mvp.sln --configuration Release
+
+      - name: Run all tests
+        run: |
+          # Find all .csproj files that end with .Tests.csproj
+          for testproj in $(find ./backend -name "*.Tests.csproj"); do
+            echo "Running tests in $testproj"
+            dotnet test "$testproj" --configuration Release --verbosity normal
+          done
