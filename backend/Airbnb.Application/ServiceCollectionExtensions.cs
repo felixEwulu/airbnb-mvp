@@ -12,6 +12,10 @@ namespace Airbnb.Application
             services.AddMediatR(typeof(ServiceCollectionExtensions).Assembly);
             services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
+
+            // Service implementations will be registered when they are created by Team Member 4
+            // and then moved to Infrastructure layer for final registration
+
             return services;
         }
     }
