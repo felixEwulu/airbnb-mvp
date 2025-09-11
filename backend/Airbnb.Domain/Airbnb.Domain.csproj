@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- Target .NET 8 -->
     <TargetFramework>net8.0</TargetFramework>
+
+    <!-- Use the latest C# version -->
+    <LangVersion>latest</LangVersion>
+
+    <!-- Enable nullable reference types -->
+    <Nullable>enable</Nullable>
+
+    <!-- Optional: Treat all warnings as errors -->
+    <!-- <TreatWarningsAsErrors>true</TreatWarningsAsErrors> -->
   </PropertyGroup>
 
 </Project>
-
