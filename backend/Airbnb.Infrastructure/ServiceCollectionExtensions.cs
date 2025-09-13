@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Airbnb.Infrastructure.Persistence; // Make sure this points to your AirbnbDbContext namespace
 
 namespace Airbnb.Infrastructure
 {
@@ -8,9 +9,11 @@ namespace Airbnb.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
-            var connectionString = config.GetConnectionString("DefaultConnection");
+            // Use the connection string from appsettings.json
+            var connectionString = config.GetConnectionString("AirbnbDb");
 
-            services.AddDbContext<AppDbContext>(options =>
+            // Register AirbnbDbContext for dependency injection
+            services.AddDbContext<AirbnbDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             return services;

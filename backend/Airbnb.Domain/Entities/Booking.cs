@@ -25,7 +25,7 @@ namespace Airbnb.Domain.Entities
         private readonly List<Payment> _payments = new();
         public IReadOnlyCollection<Payment> Payments => _payments.AsReadOnly();
 
-        private Booking() { }
+        private Booking() { } // EF Core
 
         public Booking(Guid propertyId, Guid userId, DateTime startDate, DateTime endDate, Money price)
         {
