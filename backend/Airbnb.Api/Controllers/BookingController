@@ -1,0 +1,147 @@
+using Airbnb.Application.Dtos;
+using Airbnb.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Airbnb.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class BookingsController : ControllerBase
+    {
+        private readonly IBookingService _bookingService;
+        private readonly ILogger<BookingsController> _logger;
+
+        public BookingsController(IBookingService bookingService, ILogger<BookingsController> logger)
+        {
+            _bookingService = bookingService;
+            _logger = logger;
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "RequireGuestRole")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateBooking([FromBody] BookingCreateDto bookingDto)
+        {
+            try
+            {
+                _logger.LogInformation("Creating booking for property ID: {PropertyId} by user ID: {UserId}", 
+                    bookingDto.PropertyId, bookingDto.GuestId);
+                
+                var createdBooking = await _bookingService.CreateBookingAsync(bookingDto);
+                
+                _logger.LogInformation("Booking created successfully with ID: {BookingId}", createdBooking.Id);
+                return CreatedAtAction(nameof(GetBookingDetails), new { id = createdBooking.Id }, createdBooking);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating booking for property ID: {PropertyId}", bookingDto.PropertyId);
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            try
+            {
+                _logger.LogInformation("Cancelling booking with ID: {BookingId}", id);
+                
+                await _bookingService.CancelBookingAsync(id);
+                
+                _logger.LogInformation("Booking cancelled successfully: {BookingId}", id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cancelling booking with ID: {BookingId}", id);
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBookingDetails(int id)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching details for booking ID: {BookingId}", id);
+                
+                var booking = await _bookingService.GetBookingDetailsAsync(id);
+                
+                return Ok(booking);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching booking details for ID: {BookingId}", id);
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
+        [HttpGet("user/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetUserBookings(int userId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching bookings for user ID: {UserId}", userId);
+                
+                var bookings = await _bookingService.GetUserBookingsAsync(userId);
+                
+                return Ok(bookings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching bookings for user ID: {UserId}", userId);
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        [HttpGet("property/{propertyId}")]
+        [Authorize(Policy = "RequireHostRole")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPropertyBookings(int propertyId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching bookings for property ID: {PropertyId}", propertyId);
+                
+                var bookings = await _bookingService.GetPropertyBookingsAsync(propertyId);
+                
+                return Ok(bookings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching bookings for property ID: {PropertyId}", propertyId);
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        [HttpPatch("{id}/status")]
+        [Authorize(Policy = "RequireHostRole")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateBookingStatus(int id, [FromBody] UpdateBookingStatusDto statusDto)
+        {
+            try
+            {
+                _logger.LogInformation("Updating status for booking ID: {BookingId} to {Status}", id, statusDto.Status);
+                
+                var updatedBooking = await _bookingService.UpdateBookingStatusAsync(id, statusDto.Status);
+                
+                _logger.LogInformation("Booking status updated successfully: {BookingId}", id);
+                return Ok(updatedBooking);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating status for booking ID: {BookingId}", id);
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+    }
+}
