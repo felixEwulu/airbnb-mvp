@@ -1,22 +1,28 @@
 using System.Text;
+using Airbnb.Infrastructure;
+using Airbnb.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---- Serilog ----
+// ---- Serilog Configuration ----
 builder.Host.UseSerilog((context, services, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
                  .ReadFrom.Services(services)
                  .Enrich.FromLogContext()
 );
 
-// ---- Services ----
+// ---- Add Services ----
 builder.Services.AddControllers();
 
-// JWT Authentication
+// ---- Infrastructure / DbContext ----
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// ---- JWT Authentication ----
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -34,7 +40,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Swagger/OpenAPI with JWT
+// ---- Swagger/OpenAPI with JWT ----
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -48,7 +54,6 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         Description = "Enter JWT Bearer token only",
-
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
@@ -72,12 +77,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging(); // log all HTTP requests
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// ---- Seed initial data (optional) ----
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AirbnbDbContext>();
+    SeedData.Initialize(db); // <-- Pass DbContext instance, not ServiceProvider
+}
 
 app.Run();

@@ -19,7 +19,7 @@ namespace Airbnb.Domain.Entities
         public PaymentStatus Status { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
-        private Payment() { }
+        private Payment() { } // EF Core
 
         public Payment(Guid bookingId, Money amount)
         {
