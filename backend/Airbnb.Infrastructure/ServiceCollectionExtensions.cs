@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Airbnb.Infrastructure.Persistence; // Make sure this points to your AirbnbDbContext namespace
+using Airbnb.Infrastructure.Persistence;
+using Airbnb.Domain.Repositories;
+using Airbnb.Infrastructure.Repositories;
 
 namespace Airbnb.Infrastructure
 {
@@ -12,9 +14,15 @@ namespace Airbnb.Infrastructure
             // Use the connection string from appsettings.json
             var connectionString = config.GetConnectionString("AirbnbDb");
 
-            // Register AirbnbDbContext for dependency injection
+            // Register DbContext
             services.AddDbContext<AirbnbDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            // Register repositories
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            // TODO: Add other repositories when you create them
+            // services.AddScoped<IPropertyRepository, PropertyRepository>();
 
             return services;
         }
