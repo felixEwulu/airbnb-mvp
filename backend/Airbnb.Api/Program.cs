@@ -1,4 +1,5 @@
 using System.Text;
+using Airbnb.Application;
 using Airbnb.Infrastructure;
 using Airbnb.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,10 +20,17 @@ builder.Host.UseSerilog((context, services, configuration) =>
 // ---- Add Services ----
 builder.Services.AddControllers();
 
-// ---- Infrastructure / DbContext ----
+// ---- Application & Infrastructure ----
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // ---- JWT Authentication ----
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException("JWT Key is not configured. Please check appsettings.json.");
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -34,9 +42,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
-            )
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 
@@ -79,6 +85,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -88,7 +95,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AirbnbDbContext>();
-    SeedData.Initialize(db); // <-- Pass DbContext instance, not ServiceProvider
+    SeedData.Initialize(db); // This will run migrations/seed users if implemented
 }
 
 app.Run();
