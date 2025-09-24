@@ -12,11 +12,9 @@ namespace Airbnb.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            // MediatR (v12+)
+             // ✅ MediatR v12+ style
             services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
-            });
+                cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 
             // AutoMapper
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
