@@ -29,7 +29,7 @@
     <!-- Project references -->
     <ProjectReference Include="..\Airbnb.Domain\Airbnb.Domain.csproj" />
     <ProjectReference Include="..\Airbnb.Contracts\Airbnb.Contracts.csproj" />
-    <ProjectReference Include="..\Airbnb.Application\Airbnb.Application.csproj" />
+ 
   </ItemGroup>
 
 </Project>
