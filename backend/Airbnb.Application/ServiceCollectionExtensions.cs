@@ -3,8 +3,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Airbnb.Application.Services;
-using Airbnb.Domain.Repositories;
-using Airbnb.Infrastructure.Repositories;
+using Airbnb.Application.Interfaces;
 
 namespace Airbnb.Application
 {
@@ -12,13 +11,12 @@ namespace Airbnb.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddMediatR(typeof(ServiceCollectionExtensions).Assembly);
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly));
             services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
 
-            // Register service implementations
+            // Register application services
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }
