@@ -54,25 +54,26 @@ public static class SeedData
             context.Properties.AddRange(property1, property2);
             context.SaveChanges();
 
-            // ---- Seed Bookings ----
-            var booking1 = new Booking(
-                userId: user1.Id,
-                propertyId: property1.Id,
-                startDate: DateTime.UtcNow,
-                endDate: DateTime.UtcNow.AddDays(3),
-                totalPrice: new Money(150m, "USD")
-            );
+           // Seed Bookings
+var booking1 = new Booking(
+    property1.Id,       // PropertyId
+    user1.Id,           // UserId
+    DateTime.UtcNow,    // StartDate
+    DateTime.UtcNow.AddDays(3), // EndDate
+    new Money(150m, "USD")      // Price
+);
 
-            var booking2 = new Booking(
-                userId: user2.Id,
-                propertyId: property2.Id,
-                startDate: DateTime.UtcNow,
-                endDate: DateTime.UtcNow.AddDays(2),
-                totalPrice: new Money(80m, "USD")
-            );
+var booking2 = new Booking(
+    property2.Id,       // PropertyId
+    user2.Id,           // UserId
+    DateTime.UtcNow,    // StartDate
+    DateTime.UtcNow.AddDays(2), // EndDate
+    new Money(80m, "USD")       // Price
+);
 
-            context.Bookings.AddRange(booking1, booking2);
-            context.SaveChanges();
+context.Bookings.AddRange(booking1, booking2);
+context.SaveChanges();
+
         }
     }
 }
